@@ -223,6 +223,24 @@ For production deployment, create your own Docker Compose configuration based on
 3. Follow blacklist's delisting procedure
 4. Implement stricter authentication and rate limiting
 
+## Automated Web Service Deployment (GitHub Actions)
+
+The repository includes a `Deploy Web Service` workflow (`.github/workflows/deploy-web-service.yml`) that can trigger your platform deployment hook whenever changes are pushed to `main` (or manually through **Run workflow**).
+
+### Setup
+
+1. Open your repository settings in GitHub and add a secret named `DEPLOY_WEBHOOK_URL`.
+2. Set its value to your hosting provider deploy hook endpoint (for example, Render, Coolify, Dokploy, or a custom endpoint).
+3. Ensure your hook accepts a `POST` request with JSON payload.
+
+The payload contains:
+
+- `ref`: git branch name
+- `sha`: commit SHA
+- `repository`: `owner/name` repository identifier
+
+Use these values to pull and deploy the exact commit in your target environment.
+
 ## Troubleshooting
 
 ### Common Messages Issues
