@@ -113,6 +113,12 @@ build: ## build the project containers
 	@$(COMPOSE) build
 .PHONY: build
 
+deploy-web-service: ## deploy/update web service containers (frontend, backend, worker)
+	@$(COMPOSE) up --force-recreate --build -d frontend-dev backend-dev worker-dev --wait
+	@$(COMPOSE_EXEC_APP) python manage.py migrate
+	@$(COMPOSE_EXEC_APP) python manage.py collectstatic --no-input
+.PHONY: deploy-web-service
+
 build-back-distroless: ## build the distroless production image
 	@docker build --target runtime-distroless-prod -t messages-distroless -f src/backend/Dockerfile src/backend/
 .PHONY: build-back-distroless
