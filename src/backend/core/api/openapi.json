@@ -257,6 +257,11 @@
                                             "type": "integer",
                                             "description": "Maximum age in seconds for a message to be eligible for manual retry of failed deliveries",
                                             "readOnly": true
+                                        },
+                                        "FRONTEND_SILENT_LOGIN_ENABLED": {
+                                            "type": "boolean",
+                                            "description": "Whether silent OIDC login is enabled",
+                                            "readOnly": true
                                         }
                                     },
                                     "required": [
@@ -277,7 +282,8 @@
                                         "IMAGE_PROXY_ENABLED",
                                         "FEATURE_MAILDOMAIN_CREATE",
                                         "FEATURE_MAILDOMAIN_MANAGE_ACCESSES",
-                                        "MESSAGES_MANUAL_RETRY_MAX_AGE"
+                                        "MESSAGES_MANUAL_RETRY_MAX_AGE",
+                                        "FRONTEND_SILENT_LOGIN_ENABLED"
                                     ]
                                 }
                             }
@@ -2899,6 +2905,7 @@
                             "items": {
                                 "type": "string",
                                 "enum": [
+                                    "autoreply",
                                     "message",
                                     "signature"
                                 ]
@@ -3213,6 +3220,7 @@
                         "schema": {
                             "type": "string",
                             "enum": [
+                                "autoreply",
                                 "message",
                                 "signature"
                             ]
@@ -3995,6 +4003,7 @@
                         "schema": {
                             "type": "string",
                             "enum": [
+                                "autoreply",
                                 "message",
                                 "signature"
                             ]
@@ -5658,6 +5667,9 @@
                             }
                         },
                         "description": ""
+                    },
+                    "401": {
+                        "description": "Authentication credentials were not provided or are invalid."
                     }
                 }
             }
@@ -7332,6 +7344,15 @@
                         "default": false,
                         "description": "Set as default template (auto-loaded when composing a new message)"
                     },
+                    "metadata": {
+                        "type": "object",
+                        "additionalProperties": true
+                    },
+                    "signature_id": {
+                        "type": "string",
+                        "format": "uuid",
+                        "nullable": true
+                    },
                     "created_at": {
                         "type": "string",
                         "format": "date-time",
@@ -7393,6 +7414,15 @@
                         "type": "boolean",
                         "default": false,
                         "description": "Set as default template (auto-loaded when composing a new message)"
+                    },
+                    "metadata": {
+                        "type": "object",
+                        "additionalProperties": true
+                    },
+                    "signature_id": {
+                        "type": "string",
+                        "format": "uuid",
+                        "nullable": true
                     }
                 },
                 "required": [
@@ -7404,7 +7434,8 @@
                 "type": "string",
                 "enum": [
                     "message",
-                    "signature"
+                    "signature",
+                    "autoreply"
                 ]
             },
             "PaginatedDriveItemResponse": {
@@ -7737,6 +7768,15 @@
                         "type": "boolean",
                         "default": false,
                         "description": "Set as default template (auto-loaded when composing a new message)"
+                    },
+                    "metadata": {
+                        "type": "object",
+                        "additionalProperties": true
+                    },
+                    "signature_id": {
+                        "type": "string",
+                        "format": "uuid",
+                        "nullable": true
                     }
                 }
             },
@@ -7804,6 +7844,21 @@
                         "readOnly": true,
                         "description": "Whether this template is the default; it will be automatically loaded when composing a new message"
                     },
+                    "metadata": {
+                        "type": "object",
+                        "additionalProperties": true
+                    },
+                    "signature": {
+                        "type": "string",
+                        "format": "uuid",
+                        "description": "primary key for the record as UUID",
+                        "readOnly": true
+                    },
+                    "is_active_autoreply": {
+                        "type": "boolean",
+                        "nullable": true,
+                        "readOnly": true
+                    },
                     "created_at": {
                         "type": "string",
                         "format": "date-time",
@@ -7823,9 +7878,11 @@
                     "created_at",
                     "id",
                     "is_active",
+                    "is_active_autoreply",
                     "is_default",
                     "is_forced",
                     "name",
+                    "signature",
                     "type",
                     "updated_at"
                 ]
