@@ -114,9 +114,10 @@ build: ## build the project containers
 .PHONY: build
 
 deploy-web-service: ## deploy/update web service containers (frontend, backend, worker)
-	@$(COMPOSE) up --force-recreate --build -d frontend-dev backend-dev worker-dev --wait
+	@$(COMPOSE) up --force-recreate --build -d frontend-dev backend-dev --wait
 	@$(COMPOSE_EXEC_APP) python manage.py migrate
 	@$(COMPOSE_EXEC_APP) python manage.py collectstatic --no-input
+	@$(COMPOSE) up --force-recreate -d worker-dev --wait
 .PHONY: deploy-web-service
 
 build-back-distroless: ## build the distroless production image
