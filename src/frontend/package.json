@@ -53,7 +53,8 @@
     "sass": "1.97.3",
     "ts-ics": "2.4.0",
     "zod": "4.3.6",
-    "zod-from-json-schema": "0.5.2"
+    "zod-from-json-schema": "0.5.2",
+    "@supabase/ssr": "0.7.0"
   },
   "devDependencies": {
     "@tanstack/eslint-plugin-query": "5.91.4",
