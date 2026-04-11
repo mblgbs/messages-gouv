@@ -120,6 +120,16 @@ class Base(Configuration):
         500, environ_name="MAX_RECIPIENTS_PER_MESSAGE", environ_prefix=None
     )
 
+    # Thread events
+    # Time window (in seconds) during which a ThreadEvent can be edited or
+    # deleted after creation. Set to 0 to disable the restriction and allow
+    # edits indefinitely.
+    MAX_THREAD_EVENT_EDIT_DELAY = values.PositiveIntegerValue(
+        60 * 60,  # 1 hour in seconds
+        environ_name="MAX_THREAD_EVENT_EDIT_DELAY",
+        environ_prefix=None,
+    )
+
     # Throttling - limits external recipients per mailbox/maildomain per time period
     # Format: "count/period" where period is minute, hour, or day. None to disable.
     THROTTLE_MAILBOX_OUTBOUND_EXTERNAL_RECIPIENTS = ThrottleRateValue(
@@ -798,6 +808,9 @@ class Base(Configuration):
         None, environ_name="PROMETHEUS_API_KEY", environ_prefix=None
     )
 
+    # DEPRECATED: ignored since global api_key Channels landed.
+    # Kept only so AppConfig.ready() can emit a deprecation warning when
+    # either env var is set. Migrate to a global api_key Channel.
     METRICS_API_KEY = values.Value(
         None, environ_name="METRICS_API_KEY", environ_prefix=None
     )
@@ -843,8 +856,15 @@ class Base(Configuration):
     FEATURE_IMPORT_MESSAGES = values.BooleanValue(
         default=True, environ_name="FEATURE_IMPORT_MESSAGES", environ_prefix=None
     )
+    # NOTE: "webhook" is intentionally NOT in the default list — the
+    # outbound webhook delivery pipeline is not wired yet. Keeping the
+    # type creatable would let users mint dead-letter channels that look
+    # functional. Add "webhook" here once core/mda/webhook_tasks.py and
+    # the post_save signal land.
     FEATURE_MAILBOX_ADMIN_CHANNELS = values.ListValue(
-        default=[], environ_name="FEATURE_MAILBOX_ADMIN_CHANNELS", environ_prefix=None
+        default=["api_key"],
+        environ_name="FEATURE_MAILBOX_ADMIN_CHANNELS",
+        environ_prefix=None,
     )
     FEATURE_MAILDOMAIN_CREATE = values.BooleanValue(
         default=True, environ_name="FEATURE_MAILDOMAIN_CREATE", environ_prefix=None
@@ -853,6 +873,12 @@ class Base(Configuration):
         default=True,
         environ_name="FEATURE_MAILDOMAIN_MANAGE_ACCESSES",
         environ_prefix=None,
+    )
+    # Kill-switch for the "split thread" feature. When False, the
+    # corresponding API action is disabled and the frontend hides the
+    # related menu entry.
+    FEATURE_THREAD_SPLIT = values.BooleanValue(
+        default=True, environ_name="FEATURE_THREAD_SPLIT", environ_prefix=None
     )
 
     # Logging
