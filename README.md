@@ -133,7 +133,7 @@ When running the project, the following services are available:
 | Service | URL / Port | Description | Credentials |
 |---------|------------|-------------|------------|
 | **Frontend** | [http://localhost:8900](http://localhost:8900) | Main Messages frontend | `user1@example.local` / `user1` |
-| **Backend API** | [http://localhost:8901](http://localhost:8901) | Django [REST API](http://localhost:8901/api/v1.0/) and [Admin](http://localhost:8901/admin/) | `admin@admin.local` / `admin` |
+| **Backend API** | [http://localhost:8901](http://localhost:8901) | Django [REST API](http://localhost:8901/api/v1.0/) and [Admin](http://localhost:8901/admin/) | `admin@admin.local` / `000` |
 | **Keycloak** | [http://localhost:8902](http://localhost:8902) | Identity provider admin | `admin` / `admin` |
 | **Celery UI** | [http://localhost:8903](http://localhost:8903) | Task queue monitoring | No auth required |
 | **Mailcatcher** | [http://localhost:8904](http://localhost:8904) | Email testing interface | No auth required |
