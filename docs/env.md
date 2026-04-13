@@ -32,7 +32,7 @@ The application uses a new environment file structure with `.defaults` and `.loc
 | `DJANGO_SECRET_KEY` | None | Secret key for cryptographic signing | Required |
 | `DJANGO_ALLOWED_HOSTS` | `[]` | List of allowed hostnames | Required |
 | `DJANGO_SETTINGS_MODULE` | `messages.settings` | Django settings module | Required |
-| `DJANGO_SUPERUSER_PASSWORD` | `admin` | Default superuser password for development | Dev |
+| `DJANGO_SUPERUSER_PASSWORD` | `000` | Default superuser password for development | Dev |
 | `DJANGO_DATA_DIR` | `/data` | Base directory for data storage | Optional |
 | `DJANGO_ADMIN_URL` | `admin` | admin route (must not be ended by `/`) | Optional |
 
