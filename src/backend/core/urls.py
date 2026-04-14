@@ -36,6 +36,7 @@ from core.api.viewsets.metrics import (
     MailboxUsageMetricsApiView,
     MailDomainUsersMetricsApiView,
 )
+from core.api.viewsets.monopoly import MonopolyCommandView
 from core.api.viewsets.placeholder import DraftPlaceholderView, PlaceholderView
 from core.api.viewsets.provisioning import (
     ProvisioningMailboxView,
@@ -266,6 +267,11 @@ urlpatterns = [
         f"api/{settings.API_VERSION}/submit/",
         SubmitRawEmailView.as_view(),
         name="submit-email",
+    ),
+    path(
+        f"api/{settings.API_VERSION}/monopoly/command/",
+        MonopolyCommandView.as_view(),
+        name="monopoly-command",
     ),
     # Provisioning: mailbox and user lookup (service-to-service, API key auth)
     path(

@@ -65,3 +65,13 @@ Le module expose aussi :
 ## Note sur les loyers
 
 Les loyers sont initialisés depuis la table issue du fichier `monopoly_loyers-1.xlsx` fourni dans ce projet.
+
+## API HTTP
+
+Une API dédiée est disponible pour intégrer facilement le bot depuis WhatsApp/Twilio/Meta webhook handlers :
+
+- `POST /api/v1.0/monopoly/command/`
+- Body JSON: `{ "text": "RUE paix" }`
+- Réponse JSON: `{ "response": "Rue de la Paix ..." }`
+
+Si le champ `text` est absent, l'API retourne `400` avec le détail d'erreur.
