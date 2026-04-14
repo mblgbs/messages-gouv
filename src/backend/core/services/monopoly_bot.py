@@ -37,6 +37,20 @@ class MonopolyStreet:
     rent_hotel: int
 
 
+@dataclass
+class MonopolyPlayerState:
+    name: str
+    cash: int = 1500
+    position: int = 0
+
+
+@dataclass
+class MonopolyGameState:
+    players: list[MonopolyPlayerState]
+    current_player_idx: int = 0
+    turn: int = 1
+
+
 # French Monopoly board streets in board order (colored properties only).
 _STREET_NAMES = [
     ("Boulevard de Belleville", "Marron", 60),
@@ -101,6 +115,8 @@ MONOPOLY_STREETS = [
     for (name, group, price), rents in zip(_STREET_NAMES, _RENT_SCALES)
 ]
 
+_MULTIPLAYER_GAME = MonopolyGameState(players=[])
+
 
 class MonopolyBot:
     def decide_property_purchase(self, context: MonopolyTurnContext) -> MonopolyDecision:
@@ -139,6 +155,51 @@ def get_street(name: str) -> MonopolyStreet | None:
         if needle in _normalize(street.name):
             return street
     return None
+
+
+def reset_multiplayer_game() -> None:
+    _MULTIPLAYER_GAME.players.clear()
+    _MULTIPLAYER_GAME.current_player_idx = 0
+    _MULTIPLAYER_GAME.turn = 1
+
+
+def join_multiplayer_game(player_name: str) -> str:
+    name = player_name.strip()
+    if not name:
+        return "Nom de joueur invalide."
+    if any(_normalize(player.name) == _normalize(name) for player in _MULTIPLAYER_GAME.players):
+        return f"Le joueur {name} est déjà dans la partie."
+
+    _MULTIPLAYER_GAME.players.append(MonopolyPlayerState(name=name))
+    if len(_MULTIPLAYER_GAME.players) == 1:
+        _MULTIPLAYER_GAME.current_player_idx = 0
+    return f"Joueur ajouté: {name}."
+
+
+def multiplayer_status() -> str:
+    if not _MULTIPLAYER_GAME.players:
+        return "Aucune partie multijoueur en cours. Utilise: MULTI JOIN <nom>."
+
+    current = _MULTIPLAYER_GAME.players[_MULTIPLAYER_GAME.current_player_idx]
+    lines = [
+        f"Partie multijoueur — Tour {_MULTIPLAYER_GAME.turn}",
+        f"Joueur actif: {current.name}",
+        "Joueurs:",
+    ]
+    for player in _MULTIPLAYER_GAME.players:
+        lines.append(f"- {player.name}: cash {player.cash}M, case {player.position}")
+    return "\n".join(lines)
+
+
+def next_multiplayer_turn() -> str:
+    if not _MULTIPLAYER_GAME.players:
+        return "Impossible de passer le tour: aucun joueur."
+
+    _MULTIPLAYER_GAME.current_player_idx = (_MULTIPLAYER_GAME.current_player_idx + 1) % len(_MULTIPLAYER_GAME.players)
+    if _MULTIPLAYER_GAME.current_player_idx == 0:
+        _MULTIPLAYER_GAME.turn += 1
+    current = _MULTIPLAYER_GAME.players[_MULTIPLAYER_GAME.current_player_idx]
+    return f"Tour suivant: {current.name} (tour global {_MULTIPLAYER_GAME.turn})."
 
 
 def parse_whatsapp_command(text: str) -> str:
@@ -191,10 +252,24 @@ def parse_whatsapp_command(text: str) -> str:
             f"4M {street.rent_4_houses}, hôtel {street.rent_hotel}."
         )
 
+    if command == "MULTI" and len(parts) >= 2:
+        subcommand = parts[1].upper()
+        if subcommand == "RESET":
+            reset_multiplayer_game()
+            return "Partie multijoueur réinitialisée."
+        if subcommand == "JOIN" and len(parts) >= 3:
+            return join_multiplayer_game(" ".join(parts[2:]))
+        if subcommand == "STATUS":
+            return multiplayer_status()
+        if subcommand == "NEXT":
+            return next_multiplayer_turn()
+        return "Format invalide. Utiliser: MULTI JOIN <nom> | MULTI STATUS | MULTI NEXT | MULTI RESET"
+
     return (
         "Format invalide. Utiliser:\n"
         "- ACHAT cash prix risque proprietes_groupe total_groupe\n"
         "- PRISON cash risque tours_restants carte(0|1)\n"
         "- RUES\n"
-        "- RUE <nom>"
+        "- RUE <nom>\n"
+        "- MULTI JOIN <nom> | MULTI STATUS | MULTI NEXT | MULTI RESET"
     )

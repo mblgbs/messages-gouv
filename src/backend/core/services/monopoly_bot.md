@@ -41,6 +41,18 @@ RUE paix
 RUE Champs Elysees
 ```
 
+### `MULTI JOIN <nom>`
+Ajoute un joueur à la partie multijoueur en mémoire.
+
+### `MULTI STATUS`
+Affiche le tour global, le joueur actif et l'état des joueurs.
+
+### `MULTI NEXT`
+Passe au joueur suivant.
+
+### `MULTI RESET`
+Réinitialise complètement la partie multijoueur.
+
 ## Structure des données
 
 Le module expose aussi :
@@ -48,6 +60,7 @@ Le module expose aussi :
 - `MonopolyStreet` : nom, groupe, prix, loyers (nu -> hôtel)
 - `list_streets()` : copie de la liste des rues
 - `get_street(name)` : recherche partielle accent-insensible
+- `MonopolyGameState` / `MonopolyPlayerState` : état simplifié pour le mode multijoueur
 
 ## Note sur les loyers
 
